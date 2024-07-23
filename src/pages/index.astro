@@ -1,0 +1,148 @@
+---
+
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Posnet - Financiación</title>
+  </head>
+  <body>
+    <main>
+      <form>
+        <input type="number" />
+        <button>Calcular</button>
+      </form>
+      <div class="results"></div>
+    </main>
+  </body>
+</html>
+
+<script>
+  const $form = document.querySelector("form");
+  const $results = document.querySelector(".results");
+
+  const SISTEMAS = {
+    posnet: "PosNet",
+    bancos: "Bancos",
+    cuota_simple: "Cuota Simple",
+  };
+
+  const urlPosnet =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRk6IZqqnmSDcuNEe5ymrviwG259ciagRbszQ-rl1I6wIsDEbwkQs1O67hvQZUNkGIdGcUYskbZyXhi/pub?gid=0&single=true&output=csv";
+
+  const urlBancos =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRk6IZqqnmSDcuNEe5ymrviwG259ciagRbszQ-rl1I6wIsDEbwkQs1O67hvQZUNkGIdGcUYskbZyXhi/pub?gid=76171544&single=true&output=csv";
+
+  const urlCuotaSimple =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRk6IZqqnmSDcuNEe5ymrviwG259ciagRbszQ-rl1I6wIsDEbwkQs1O67hvQZUNkGIdGcUYskbZyXhi/pub?gid=773839087&single=true&output=csv";
+
+  const indice = 100 / 97.822;
+
+  const endpoints = [urlPosnet, urlBancos, urlCuotaSimple];
+
+  let data_db = [];
+
+  $form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const precio = Number(e.target[0].value);
+
+    if (data_db.length === 0) {
+      const promises = endpoints.map((ep) =>
+        fetch(ep).then((res) => res.text())
+      );
+
+      const data_csv = await Promise.all(promises);
+
+      data_csv.forEach((f_csv) => {
+        const array = f_csv.split("\n");
+        const sistema_name = array[0].split(",")[0].trim();
+
+        const data = array.slice(2).map((row) => {
+          const [cuotas, _td, coef_con_iva] = row.trim().split(",");
+          return {
+            cuotas: Number(cuotas),
+            td: parseFloat(_td.replace("%", "")) / 100,
+            coef_con_iva: Number(coef_con_iva),
+          };
+        });
+        data_db.push({ sistema: sistema_name, data });
+      });
+    }
+
+    const financiacion = [];
+
+    data_db.forEach(({ sistema, data }) => {
+      let divisor = 4;
+
+      if (sistema === "cuota_simple") divisor = 2;
+
+      const data_procesada = data.map(({ cuotas, td, coef_con_iva }) => {
+        const precio_financiado =
+          precio * coef_con_iva * indice + (precio * td) / divisor;
+        const cuota = precio_financiado / cuotas;
+        const descuento_td = precio_financiado * td;
+        const iva_td = descuento_td * 0.21;
+        const arancel = precio_financiado * 0.018;
+        const iva_arancel = arancel * 0.21;
+        const total_descuentos = descuento_td + iva_td + arancel + iva_arancel;
+        const monto_a_percibir = precio_financiado - total_descuentos;
+
+        return {
+          cuotas,
+          cuota: cuota.toFixed(2),
+          precio_financiado: precio_financiado.toFixed(2),
+          descuento_td: descuento_td.toFixed(2),
+          iva_td: iva_td.toFixed(2),
+          arancel: arancel.toFixed(2),
+          iva_arancel: iva_arancel.toFixed(2),
+          total_descuentos: total_descuentos.toFixed(2),
+          monto_a_percibir: monto_a_percibir.toFixed(2),
+        };
+      });
+
+      financiacion.push({ sistema, data: data_procesada });
+    });
+
+    let _htmlString = "";
+
+    financiacion.forEach(({ sistema, data }) => {
+      _htmlString += `<div class="card">
+						<h2>${SISTEMAS[sistema]}</h2>`;
+
+      data.forEach(
+        ({
+          cuotas,
+          cuota,
+          precio_financiado,
+          descuento_td,
+          iva_td,
+          arancel,
+          iva_arancel,
+          total_descuentos,
+          monto_a_percibir,
+        }) => {
+          _htmlString += `<p>${cuotas} cuotas de $ ${cuota}</p>`;
+        }
+      );
+      _htmlString += "</div>";
+    });
+    $results.innerHTML = _htmlString;
+  });
+</script>
+
+<style>
+  .results {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+</style>
+
+<style is:inline>
+  .card {
+    border: 1px solid black;
+  }
+</style>
