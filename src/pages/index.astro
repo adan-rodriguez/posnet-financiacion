@@ -1,5 +1,6 @@
 ---
-
+// Supports weights 100-900
+import "@fontsource-variable/montserrat";
 ---
 
 <html lang="es">
@@ -12,8 +13,11 @@
   <body>
     <main>
       <form>
-        <input type="number" />
-        <button>Calcular</button>
+        <label>
+          <span> Precio de venta de contado </span>
+          <input required />
+        </label>
+        <button>Calcular cuotas</button>
       </form>
       <div class="results"></div>
     </main>
@@ -124,7 +128,7 @@
           total_descuentos,
           monto_a_percibir,
         }) => {
-          _htmlString += `<p>${cuotas} cuotas de $ ${cuota}</p>`;
+          _htmlString += `<p class="item">${cuotas} cuotas de $ ${cuota} ($ ${precio_financiado})</p>`;
         }
       );
       _htmlString += "</div>";
@@ -134,15 +138,89 @@
 </script>
 
 <style>
+  :root {
+    --color-posnet: rgb(255, 102, 0);
+    --box-shadow-black: rgba(0, 0, 0, 0) 0px 0px 0px 0px,
+      rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(0, 0, 0) 0px 10px 15px -3px,
+      rgb(0, 0, 0) 0px 4px 6px -4px;
+  }
+
+  body {
+    font-family: "Montserrat Variable", sans-serif;
+    background-color: #eee;
+  }
+
+  main {
+    max-width: 1000px;
+    margin-inline: auto;
+    padding: 1rem;
+  }
+
+  form {
+    padding: 1rem;
+    border-radius: 4px;
+    max-width: 500px;
+    margin-inline: auto;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    justify-content: center;
+    box-shadow: var(--box-shadow-black);
+
+    & label {
+      display: flex;
+      flex-direction: column;
+      column-gap: 0.5rem;
+
+      & span {
+        font-size: 0.75rem;
+        padding-left: 0.25rem;
+      }
+
+      & input {
+        background-color: #eee;
+        padding: 0.5rem;
+        border-radius: 4px;
+        outline: none;
+      }
+    }
+
+    & button {
+      background-color: var(--color-posnet);
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+  }
+
   .results {
+    margin-top: 3rem;
     display: flex;
     flex-wrap: wrap;
     gap: 2rem;
+    justify-content: center;
   }
 </style>
 
 <style is:inline>
   .card {
-    border: 1px solid black;
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 1rem;
+    font-size: 0.8rem;
+    box-shadow: var(--box-shadow-black);
+
+    & h2 {
+      font-weight: 700;
+    }
+  }
+
+  .item {
+    padding-block: 0.5rem;
+    border-bottom: 1px solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 </style>
