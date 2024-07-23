@@ -19,6 +19,7 @@ import "@fontsource-variable/montserrat";
         </label>
         <button>Calcular cuotas</button>
       </form>
+      <h2 class="precio"></h2>
       <div class="results"></div>
     </main>
   </body>
@@ -26,6 +27,7 @@ import "@fontsource-variable/montserrat";
 
 <script>
   const $form = document.querySelector("form");
+  const $precio = document.querySelector(".precio");
   const $results = document.querySelector(".results");
 
   const SISTEMAS = {
@@ -95,6 +97,7 @@ import "@fontsource-variable/montserrat";
         const monto_a_percibir = precio_financiado - total_descuentos;
 
         return {
+          td: td * 100,
           cuotas,
           cuota: cuota.toFixed(2),
           precio_financiado: precio_financiado.toFixed(2),
@@ -118,6 +121,7 @@ import "@fontsource-variable/montserrat";
 
       data.forEach(
         ({
+          td,
           cuotas,
           cuota,
           precio_financiado,
@@ -128,11 +132,23 @@ import "@fontsource-variable/montserrat";
           total_descuentos,
           monto_a_percibir,
         }) => {
-          _htmlString += `<p class="item">${cuotas} cuotas de $ ${cuota} ($ ${precio_financiado})</p>`;
+          _htmlString += `<details name=${sistema}>
+                            <summary>${cuotas} cuotas de $ ${cuota}<span class="precio-financiado">$ ${precio_financiado}</span>
+                            </summary>
+                            <div class="discounts">
+                              <p>Tasa directa (${td}% s/precio financiado) <span>- $ ${descuento_td}</span></p>
+                              <p>IVA (21% s/TD) <span>- $ ${iva_td}</span></p>
+                              <p>Arancel (1.8% s/precio financiado) <span>- $ ${arancel}</span></p>
+                              <p>IVA (21% s/arancel) <span>- $ ${iva_arancel}</span></p>
+                              <p>Monto a percibir <span>$ ${monto_a_percibir}</span></p>
+                            </div>
+                          </details>`;
         }
       );
       _htmlString += "</div>";
     });
+    console.log(_htmlString);
+    $precio.textContent = `$ ${precio}`;
     $results.innerHTML = _htmlString;
   });
 </script>
@@ -193,11 +209,20 @@ import "@fontsource-variable/montserrat";
     }
   }
 
+  .precio {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 3rem;
+  }
+
   .results {
+    max-width: 500px;
+    margin-inline: auto;
     margin-top: 3rem;
     display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
+    flex-direction: column;
+    row-gap: 2rem;
     justify-content: center;
   }
 </style>
@@ -206,21 +231,60 @@ import "@fontsource-variable/montserrat";
   .card {
     background-color: #fff;
     border-radius: 4px;
-    padding: 1rem;
+    padding: 0.5rem;
     font-size: 0.8rem;
     box-shadow: var(--box-shadow-black);
 
     & h2 {
       font-weight: 700;
+      padding: 0.5rem;
     }
   }
 
-  .item {
-    padding-block: 0.5rem;
+  details {
+    padding: 0.5rem;
     border-bottom: 1px solid #eee;
+    border-radius: 4px;
+
+    transition: background-color 0.3s;
+
+    &:is(:hover, :focus-visible) {
+      background-color: #eee;
+    }
+
+    &[open] {
+      background-color: #eee;
+    }
 
     &:last-child {
       border-bottom: none;
+    }
+
+    & summary {
+      cursor: pointer;
+
+      & .precio-financiado {
+        font-weight: bold;
+        float: inline-end;
+      }
+
+      &::marker {
+        color: var(--color-posnet);
+      }
+    }
+
+    & .discounts {
+      margin-top: 0.5rem;
+      opacity: 0.8;
+
+      & p {
+        display: flex;
+        justify-content: space-between;
+
+        &:last-child {
+          margin-top: 0.5rem;
+        }
+      }
     }
   }
 </style>
