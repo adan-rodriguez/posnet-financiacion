@@ -15,10 +15,16 @@
     }
   ],
   "theme_color": "#ff6600",
-  "background_color": "#ff6600",
+  "background_color": "#eee",
   "start_url": "/",
   "display": "standalone",
   "screenshots": [
+    {
+      "src": "/screenshot-wide.webp",
+      "sizes": "1347x638",
+      "type": "image/webp",
+      "form_factor": "wide"
+    },
     {
       "src": "/screenshot-narrow.webp",
       "sizes": "550x640",
