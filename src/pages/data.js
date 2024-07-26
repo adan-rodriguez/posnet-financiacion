@@ -1,10 +1,8 @@
-export const prerender = false;
-
-export const GET = async () => {
+export async function GET() {
   console.log("get");
   return new Response(
     JSON.stringify({
       greeting: "Hola",
     })
   );
-};
+}
