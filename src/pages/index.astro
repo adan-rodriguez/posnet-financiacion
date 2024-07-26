@@ -1,7 +1,6 @@
 ---
 // Supports weights 100-900
 import "@fontsource-variable/montserrat";
-console.log("fdgdf");
 ---
 
 <html lang="es">
@@ -52,20 +51,15 @@ console.log("fdgdf");
 
   let data_db = [];
 
-  import { GET } from "./data.js";
+  // import { GET } from "./data.json.ts";
   $form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    let response = await GET();
-    const data = await response.json();
-    console.log(data);
     const precio = Number(e.target[0].value);
 
     if (data_db.length === 0) {
-      const promises = endpoints.map((ep) =>
-        fetch(ep).then((res) => res.text())
-      );
+      const response = await fetch("/data");
 
-      const data_csv = await Promise.all(promises);
+      const data_csv = await response.json();
 
       data_csv.forEach((f_csv) => {
         const array = f_csv.split("\n");
