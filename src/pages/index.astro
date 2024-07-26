@@ -6,9 +6,15 @@ import "@fontsource-variable/montserrat";
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/calculadora-512.png" />
     <meta name="viewport" content="width=device-width" />
-    <title>Posnet - Financiación</title>
+    <title>CalcuCuotas</title>
+    <meta
+      name="description"
+      content="Calculadora de cuotas, intereses, precio final, tasas, impuestos, etc"
+    />
+    <meta name="theme-color" content="#ff6600" />
+    <link rel="manifest" href="/site.webmanifest" />
   </head>
   <body>
     <main>
@@ -27,6 +33,7 @@ import "@fontsource-variable/montserrat";
 
 <script>
   const $form = document.querySelector("form");
+  const $btn = document.querySelector("form button");
   const $precio = document.querySelector(".precio");
   const $results = document.querySelector(".results");
 
@@ -36,27 +43,16 @@ import "@fontsource-variable/montserrat";
     cuota_simple: "Cuota Simple",
   };
 
-  const urlPosnet =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRk6IZqqnmSDcuNEe5ymrviwG259ciagRbszQ-rl1I6wIsDEbwkQs1O67hvQZUNkGIdGcUYskbZyXhi/pub?gid=0&single=true&output=csv";
-
-  const urlBancos =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRk6IZqqnmSDcuNEe5ymrviwG259ciagRbszQ-rl1I6wIsDEbwkQs1O67hvQZUNkGIdGcUYskbZyXhi/pub?gid=76171544&single=true&output=csv";
-
-  const urlCuotaSimple =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vRk6IZqqnmSDcuNEe5ymrviwG259ciagRbszQ-rl1I6wIsDEbwkQs1O67hvQZUNkGIdGcUYskbZyXhi/pub?gid=773839087&single=true&output=csv";
-
   const indice = 100 / 97.822;
-
-  const endpoints = [urlPosnet, urlBancos, urlCuotaSimple];
 
   let data_db = [];
 
-  // import { GET } from "./data.json.ts";
   $form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const precio = Number(e.target[0].value);
 
     if (data_db.length === 0) {
+      $btn.textContent = "Calculando...";
       const response = await fetch("/data");
 
       const data_csv = await response.json();
@@ -146,6 +142,7 @@ import "@fontsource-variable/montserrat";
       );
       _htmlString += "</div>";
     });
+    $btn.textContent = "Calcular cuotas";
     $precio.textContent = `$ ${precio}`;
     $results.innerHTML = _htmlString;
   });
@@ -204,6 +201,12 @@ import "@fontsource-variable/montserrat";
       background-color: var(--color-posnet);
       padding: 0.5rem;
       border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.85rem;
+
+      &:active {
+        translate: 0 2px;
+      }
     }
   }
 
