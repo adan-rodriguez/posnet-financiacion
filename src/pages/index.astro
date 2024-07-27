@@ -6,12 +6,12 @@ import "@fontsource-variable/montserrat";
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/png" href="/calculadora-512.png" />
+    <link rel="icon" type="image/png" href="/calculadora-192.png" />
     <meta name="viewport" content="width=device-width" />
     <title>CalcuCuotas</title>
     <meta
       name="description"
-      content="Calculadora de cuotas, intereses, precio final, tasas, impuestos, etc"
+      content="Calculadora de cuotas, intereses, tasas, impuestos, etc"
     />
     <meta name="theme-color" content="#ff6600" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -36,6 +36,30 @@ import "@fontsource-variable/montserrat";
   const $btn = document.querySelector("form button");
   const $precio = document.querySelector(".precio");
   const $results = document.querySelector(".results");
+
+  if (window.BeforeInstallPromptEvent) {
+    const $pwa_btn = document.createElement("button");
+    $pwa_btn.setAttribute("id", "pwa-install");
+    $pwa_btn.textContent = "Instalar App";
+
+    let deferredPrompt;
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      setTimeout(() => document.body.append($pwa_btn), 5000);
+    });
+
+    $pwa_btn.addEventListener("click", async () => {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+    });
+
+    window.addEventListener("appinstalled", () => {
+      deferredPrompt = null;
+      $pwa_btn.remove();
+    });
+  }
 
   const SISTEMAS = {
     posnet: "PosNet",
@@ -164,7 +188,7 @@ import "@fontsource-variable/montserrat";
   main {
     max-width: 1000px;
     margin-inline: auto;
-    padding: 1rem;
+    padding: 1rem 1rem 2rem 1rem;
   }
 
   form {
@@ -286,6 +310,28 @@ import "@fontsource-variable/montserrat";
           margin-top: 0.5rem;
         }
       }
+    }
+  }
+
+  #pwa-install {
+    background-color: var(--color-posnet);
+    font-size: 0.7rem;
+    font-weight: bold;
+    position: fixed;
+    bottom: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    box-shadow: var(--box-shadow-black);
+    left: 50%;
+    translate: -50% 0;
+    transition: scale 0.3s;
+
+    &:is(:hover, :focus-visible) {
+      scale: 1.05;
+    }
+
+    &:active {
+      translate: -50% 2px;
     }
   }
 </style>
