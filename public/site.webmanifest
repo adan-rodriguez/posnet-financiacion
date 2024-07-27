@@ -1,7 +1,7 @@
 {
   "name": "CalcuCuotas",
   "short_name": "CalcuCuotas",
-  "description": "Calculadora de cuotas, intereses, precio final, tasas, impuestos, etc",
+  "description": "Calculadora de cuotas, intereses, tasas, impuestos, etc",
   "icons": [
     {
       "src": "/calculadora-192.png",
