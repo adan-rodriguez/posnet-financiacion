@@ -79,7 +79,7 @@ import "@fontsource-variable/montserrat";
       $btn.textContent = "Calculando...";
       const response = await fetch("/data");
 
-      const data_csv = await response.json();
+      const { data: data_csv } = await response.json();
 
       data_csv.forEach((f_csv) => {
         const array = f_csv.split("\n");
